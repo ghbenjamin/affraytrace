@@ -103,5 +103,4 @@ Vec3<T> operator-(Vec3<T> const& vec1, Vec3<T> const& vec2)
   return Vec3<T>( vec1.x() - vec2.x(), vec1.y() - vec2.y(), vec1.z() - vec2.z() );
 }
 
-
 }

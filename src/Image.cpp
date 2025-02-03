@@ -20,12 +20,23 @@ Image::Image( int const width, int const height )
 
 void Image::save(std::string const &filename)
 {
+
+    auto const linearToGamma = []( const float f) -> float {
+        if ( f <= 0 )
+        {
+            return 0;
+        }
+
+        return std::sqrt( f );
+    };
+
     // Map from [0,1] float RGB space to [0,255] int RGB space
     auto const scaleF = []( const float f ) -> std::uint8_t {
         return std::floor(255.999f * f);
     };
 
      std::vector<uint8_t> scaledData = m_data
+        | std::views::transform( linearToGamma )
         | std::views::transform(scaleF)
         | std::ranges::to<std::vector>();
 
