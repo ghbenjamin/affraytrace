@@ -2,6 +2,8 @@ bin/
 build/
 .idea/
 
+*.png
+
 # Prerequisites
 *.d
 

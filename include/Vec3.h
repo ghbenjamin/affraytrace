@@ -33,7 +33,6 @@ public:
     return std::sqrt(length2());
   }
 
-
   T dot(const Vec3<T> &other) const
   {
     return m_x * other.m_x + m_y * other.m_y + m_z * other.m_z;
@@ -52,6 +51,23 @@ public:
   {
     return *this / length();
   }
+
+  [[nodiscard]] bool almost_zero() const
+  {
+    T s = 1e-8;
+    return (std::fabs(m_x) < s) && (std::fabs(m_y) < s) && (std::fabs(m_z) < s);
+  }
+
+  Vec3 reflect( Vec3 const& normal) const
+  {
+    return *this - 2 * dot(normal) * normal;
+  }
+
+  Vec3 elementwise_product( Vec3 const& other ) const
+  {
+    return Vec3{ m_x * other.m_x, m_y * other.m_y, m_z * other.m_z };
+  }
+
 
 private:
   T m_x;

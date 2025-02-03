@@ -4,19 +4,21 @@
 
 #include "Scene.h"
 #include "Interval.h"
+#include "Material.h"
 #include "Ray.h"
 
 namespace affraytrace
 {
 
-Camera::Camera(const int width, const int height, Vec3d origin, double focalLength)
-    : m_imageWidth(width),
-      m_imageHeight(height),
-      m_origin(origin),
-      m_focalLength(focalLength),
-      m_twister( m_rd() ),
-      m_samplesPerPixel(16),
-      m_maxDepth( 50 )
+Camera::Camera( Random& random, CameraData const& data )
+    :
+        m_imageWidth(data.width),
+        m_imageHeight(data.height),
+        m_origin(data.origin),
+        m_focalLength(data.focalLength),
+        m_samplesPerPixel(data.samplesPerPixel),
+        m_maxDepth( data.maxScatteringDepth ),
+        m_random(random)
 {
     double viewportHeight = 2;
     double viewportWidth = viewportHeight * (static_cast<double>(m_imageWidth)/m_imageHeight);
@@ -66,7 +68,7 @@ Image Camera::render(Scene const &scene)
 
 Ray Camera::get_sampled_ray(const int i, const int j)
 {
-    Vec3d random_offset = sample_unit_square();
+    Vec3d random_offset = m_random.sample_unit_square();
 
     auto pixel_center =
         m_pixelOrigin
@@ -80,86 +82,34 @@ Ray Camera::get_sampled_ray(const int i, const int j)
 
 Colour Camera::ray_colour(Ray const &ray, int depth, Scene const &scene)
 {
-    // Temporary hard coded colouring taken from https://raytracing.github.io/books/RayTracingInOneWeekend.html
 
     if (depth > m_maxDepth)
     {
         return Colour{ 0, 0, 0 };
     }
 
-    if (auto maybe_hit = scene.hit( ray, Interval(0.001f, utils::limits::infinty)); maybe_hit.has_value() )
+    if (auto maybe_hit = scene.hit( ray, Interval(0.001, utils::limits::infinty)); maybe_hit.has_value() )
     {
-        Vec3d random_scatter = random_unit_hemisphere_vector(maybe_hit->normal());
-        // return 0.5 * (Colour(1, 1, 1) + maybe_hit->normal() );
-
-        return 0.5 * ray_colour( Ray(maybe_hit->point(), random_scatter), depth + 1, scene );
+        if ( auto maybe_scatter = maybe_hit->material()->scatter(m_random, ray, *maybe_hit ); maybe_scatter.has_value() )
+        {
+            // We hit, and scattered the ray
+            return maybe_scatter->attenuation().elementwise_product( ray_colour( maybe_scatter->ray(), depth + 1, scene ) );
+        }
+        else
+        {
+            // We hit, but did not scatter.
+            return Colour{ 0, 0, 0 };
+        }
     }
 
+
+    // Temporary hard coded colouring taken from https://raytracing.github.io/books/RayTracingInOneWeekend.html
     // Ray hit nothing
     double a = 0.5 * (ray.direction().normalized().y() + 1.0);
     return (1.0 - a) * Colour(1.0, 1.0, 1.0) +
         a * Colour(0.5, 0.7, 1.0);
 }
 
-double Camera::random_unit_double()
-{
-    return m_dist(m_twister);
-}
 
-double Camera::random_double(double min, double max)
-{
-    return min + (max - min) * random_unit_double();
-}
-
-Vec3d Camera::sample_unit_square()
-{
-    // Return a random vector on the centered unit square - betwteen [-0.5,-0.5,0] and [0.5,0.5,0]
-    return { random_unit_double() - 0.5, random_unit_double() - 0.5, 0 };
-}
-
-Vec3d Camera::random_box_vector()
-{
-    return { random_double(-1, 1), random_double(-1, 1), random_double(-1, 1) };
-}
-
-Vec3d Camera::random_unit_sphere_vector()
-{
-    while (true)
-    {
-        Vec3d trial = random_box_vector();
-
-        if (double norm = trial.length2(); norm > 0.000001 && norm <= 1.0 )
-        {
-            return trial.normalized();
-        }
-    }
-}
-
-Vec3d Camera::random_unit_disc_vector()
-{
-    while (true)
-    {
-        Vec3d trial = random_box_vector();
-
-        if (double norm = trial.x() * trial.x() + trial.y() * trial.y() ; norm > 0.000001 && norm <= 1.0 )
-        {
-            double sqrt_norm = std::sqrt(norm);
-            return Vec3d{ trial.x() / sqrt_norm, trial.y() / sqrt_norm, 0 };
-        }
-    }
-}
-
-Vec3d Camera::random_unit_hemisphere_vector(Vec3d const &normal)
-{
-    Vec3d trial = random_unit_sphere_vector();
-    if ( trial.dot(normal) > 0.0 )
-    {
-        return -trial;
-    }
-    else
-    {
-        return trial;
-    }
-}
 
 }

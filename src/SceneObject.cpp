@@ -6,8 +6,8 @@
 namespace affraytrace
 {
 
-SphereObject::SphereObject(Vec3d const& origin, double radius)
-    : m_origin(origin), m_radius(radius) {}
+SphereObject::SphereObject(Vec3d const& origin, double radius, Material* material)
+    : m_origin(origin), m_radius(radius), m_material(material) {}
 
 std::optional<HitData> SphereObject::hit(Ray const &ray, Interval const& tValid) const
 {
@@ -39,7 +39,7 @@ std::optional<HitData> SphereObject::hit(Ray const &ray, Interval const& tValid)
 
 
     // First, try positive root: -b + sqrt(discriminant) // 2a
-    double root = (-qparam_b + std::sqrt(discriminant)) / (2 * qparam_a);
+    double root = (-qparam_b - std::sqrt(discriminant)) / (2 * qparam_a);
 
     if ( !tValid.contains(root, false) )
     {
@@ -56,8 +56,10 @@ std::optional<HitData> SphereObject::hit(Ray const &ray, Interval const& tValid)
     // Return Q + tD, and some assorted data about the hit
 
     Point3d hitPoint = ray.at(root);
+    // Point3d hitNormal = (hitPoint - m_origin) / m_radius;
 
-    HitData hitData( ray, hitPoint, root, (hitPoint - m_origin) / m_radius );
+
+    HitData hitData( ray, hitPoint, root, (hitPoint - m_origin) / m_radius, m_material );
     return hitData;
 }
 

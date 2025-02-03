@@ -24,7 +24,7 @@ public:
 class SphereObject : public SceneObject
 {
 public:
-    SphereObject( Vec3d const& origin, double radius );
+    SphereObject( Vec3d const& origin, double radius, Material* material );
 
     [[nodiscard]]
     std::optional<HitData> hit( Ray const& ray, Interval const& tValid ) const override;
@@ -32,6 +32,7 @@ public:
 private:
     Vec3d m_origin;
     double m_radius;
+    Material* m_material;
 };
 
 

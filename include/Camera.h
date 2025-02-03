@@ -4,6 +4,7 @@
 
 #include "Vec3.h"
 #include "Image.h"
+#include "Random.h"
 
 namespace affraytrace
 {
@@ -14,10 +15,20 @@ class SceneObject;
 class Ray;
 
 
+struct CameraData
+{
+    int width = 800;
+    int height = 600;
+    Vec3d origin = Vec3d{0, 0.0, 1.5};
+    double focalLength = 1.0;
+    int samplesPerPixel = 50;
+    int maxScatteringDepth = 50;
+};
+
 class Camera
 {
 public:
-    Camera(int width, int height, Vec3d origin, double focalLength);
+    Camera( Random& random, CameraData const& data );
     Image render( Scene const& scene );
 
 private:
@@ -42,9 +53,7 @@ private:
     Vec3d m_pixel_dX;
 
     // Random state
-    std::random_device m_rd;
-    std::mt19937 m_twister;
-    std::uniform_real_distribution<> m_dist;
+    Random& m_random;
 
 private:
 
@@ -54,26 +63,7 @@ private:
     // Temporary hard coded ray -> colour
     Colour ray_colour( Ray const& ray, int depth, Scene const& scene );
 
-    // A random double on [0, 1)
-    double random_unit_double();
 
-    // A random double on [min, max)
-    double random_double( double min, double max );
-
-    // Random Vec3 between [-0,5,-0.5,0] and [0.5,0.5,0]
-    Vec3d sample_unit_square();
-
-    // Random Vec3 between [-1,-1,-1] and [1,1,1]
-    Vec3d random_box_vector();
-
-    // Random Vec3 on the surface of the unit sphere
-    Vec3d random_unit_sphere_vector();
-
-    // Random Vec3 on the surface of the unit disc with z=0
-    Vec3d random_unit_disc_vector();
-
-    // Random Vec3 on the surface of the unit hemisphere as defined by the given normal
-    Vec3d random_unit_hemisphere_vector(Vec3d const& normal);
 
 };
 
