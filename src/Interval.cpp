@@ -5,7 +5,7 @@ namespace affraytrace
 
 // Unbounded interval contains nothing
 Interval::Interval()
-    : m_min(utils::limits::infinty), m_max(-utils::limits::infinty) {}
+    : m_min(limits::infinty), m_max(-limits::infinty) {}
 
 Interval::Interval(const double min, const double max)
     : m_min(min), m_max(max) {}

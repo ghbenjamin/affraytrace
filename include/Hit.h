@@ -1,9 +1,7 @@
 #pragma once
 
-#include <memory>
-
-#include "Colour.h"
 #include "Ray.h"
+#include "Utils.h"
 #include "Vec3.h"
 
 namespace affraytrace

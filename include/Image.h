@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-#include "Colour.h"
+#include "Utils.h"
 
 namespace affraytrace
 {

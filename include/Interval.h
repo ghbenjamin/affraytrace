@@ -25,9 +25,9 @@ private:
 
 namespace intervals
 {
-    static const auto positive_numbers = Interval(0, utils::limits::infinty);
-    static const auto empty = Interval(utils::limits::infinty, -utils::limits::infinty);
-    static const auto everything = Interval(-utils::limits::infinty, utils::limits::infinty);
+    static const auto positive_numbers = Interval(0, limits::infinty);
+    static const auto empty = Interval(limits::infinty, -limits::infinty);
+    static const auto everything = Interval(-limits::infinty, limits::infinty);
 }
 
 }

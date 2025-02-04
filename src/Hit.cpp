@@ -1,9 +1,9 @@
 #include "Hit.h"
-
 #include "Ray.h"
 
 namespace affraytrace
 {
+
 HitData::HitData(Ray const &ray, Point3d const &hitPoint, double t, Vec3d const &hitNormal, Material const* material)
     : m_point(hitPoint), m_normal(hitNormal), m_t(t), m_material(material)
 {
@@ -41,6 +41,7 @@ Material const* HitData::material() const
 }
 
 
+
 ScatterData::ScatterData(Colour const &attenuation, Ray const &ray)
     : m_attenuation(attenuation), m_ray(ray) {}
 
@@ -53,4 +54,5 @@ Ray ScatterData::ray() const
 {
     return m_ray;
 }
+
 }

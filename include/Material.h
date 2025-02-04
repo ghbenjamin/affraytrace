@@ -1,7 +1,7 @@
 #pragma once
 #include <optional>
 
-#include "Colour.h"
+#include "Utils.h"
 #include "Hit.h"
 
 namespace affraytrace

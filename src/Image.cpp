@@ -20,7 +20,7 @@ Image::Image( int const width, int const height )
 
 void Image::save(std::string const &filename)
 {
-
+    // Map from linear space to gamma space
     auto const linearToGamma = []( const float f) -> float {
         if ( f <= 0 )
         {

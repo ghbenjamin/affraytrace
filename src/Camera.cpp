@@ -1,7 +1,5 @@
 #include "Camera.h"
 
-#include <iso646.h>
-
 #include "Scene.h"
 #include "Interval.h"
 #include "Material.h"
@@ -82,13 +80,15 @@ Ray Camera::get_sampled_ray(const int i, const int j)
 
 Colour Camera::ray_colour(Ray const &ray, int depth, Scene const &scene)
 {
-
+    // At max depth, stop bouncing and return 0. (We ought to be nearly there already assuming that the scene objects
+    // have a typical albedo)
     if (depth > m_maxDepth)
     {
         return Colour{ 0, 0, 0 };
     }
 
-    if (auto maybe_hit = scene.hit( ray, Interval(0.001, utils::limits::infinty)); maybe_hit.has_value() )
+    // Interval starts at 0.001 to avoid re-registering the same hit multiple times
+    if (auto maybe_hit = scene.hit( ray, Interval(0.001, limits::infinty)); maybe_hit.has_value() )
     {
         if ( auto maybe_scatter = maybe_hit->material()->scatter(m_random, ray, *maybe_hit ); maybe_scatter.has_value() )
         {
@@ -97,19 +97,18 @@ Colour Camera::ray_colour(Ray const &ray, int depth, Scene const &scene)
         }
         else
         {
-            // We hit, but did not scatter.
+            // We hit, but did not scatter. Return black to simulate absorption of the ray
             return Colour{ 0, 0, 0 };
         }
     }
 
+    // Ray hit nothing. Return the colour of the skybox.
 
     // Temporary hard coded colouring taken from https://raytracing.github.io/books/RayTracingInOneWeekend.html
-    // Ray hit nothing
+    // LERP in the y-axis from white to sky blue
     double a = 0.5 * (ray.direction().normalized().y() + 1.0);
     return (1.0 - a) * Colour(1.0, 1.0, 1.0) +
         a * Colour(0.5, 0.7, 1.0);
 }
-
-
 
 }

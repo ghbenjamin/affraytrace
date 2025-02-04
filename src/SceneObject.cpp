@@ -56,8 +56,6 @@ std::optional<HitData> SphereObject::hit(Ray const &ray, Interval const& tValid)
     // Return Q + tD, and some assorted data about the hit
 
     Point3d hitPoint = ray.at(root);
-    // Point3d hitNormal = (hitPoint - m_origin) / m_radius;
-
 
     HitData hitData( ray, hitPoint, root, (hitPoint - m_origin) / m_radius, m_material );
     return hitData;
