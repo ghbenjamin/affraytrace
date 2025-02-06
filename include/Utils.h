@@ -14,6 +14,12 @@ namespace affraytrace
     {
         constexpr double infinty = std::numeric_limits<double>::max();
     }
+
+    namespace math
+    {
+        double radians_to_degrees(double radians);
+        double degrees_to_radians(double radians);
+    }
 }
 
 

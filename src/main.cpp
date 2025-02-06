@@ -23,7 +23,7 @@ int main()
     Scene mainScene;
 
     mainScene.addObject<SphereObject>( Vec3d(0.0, -100.5, -1.0), 100.0, material_ground.get() );
-    mainScene.addObject<SphereObject>( Vec3d(0.0,    0.0, -1.2), 0.5, material_center.get() );
+    mainScene.addObject<SphereObject>( Vec3d(0.0,    0.0, -1.6), 0.5, material_center.get() );
     mainScene.addObject<SphereObject>( Vec3d(-1.0,    0.0, -0.8), 0.5, material_left.get() );
     mainScene.addObject<SphereObject>( Vec3d(1.5,    0.1, -1.0), 0.6, material_left.get() );
 
@@ -32,6 +32,14 @@ int main()
 
 
     CameraData cameraData;
+
+    cameraData.width = 800;
+    cameraData.height = 600;
+    cameraData.origin = Vec3d{0, 2, 3};
+    cameraData.target = Vec3d{0, 0, -1};
+    cameraData.vertical_fov = 45;
+    cameraData.samplesPerPixel = 10;
+
     Camera camera{ randomState, cameraData };
 
     Image rendered = camera.render(mainScene);

@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include <iostream>
+
 #include "Scene.h"
 #include "Interval.h"
 #include "Material.h"
@@ -13,24 +15,36 @@ Camera::Camera( Random& random, CameraData const& data )
         m_imageWidth(data.width),
         m_imageHeight(data.height),
         m_origin(data.origin),
-        m_focalLength(data.focalLength),
+        m_target(data.target),
         m_samplesPerPixel(data.samplesPerPixel),
         m_maxDepth( data.maxScatteringDepth ),
-        m_random(random)
+        m_random(random),
+        m_vertical_fov(data.vertical_fov)
 {
-    double viewportHeight = 2;
+
+    Vec3d camera_up = {0, 1, 0};
+
+    double focal_length = (m_origin - m_target).length();
+
+    double vfov_rads = math::degrees_to_radians(m_vertical_fov);
+    double viewportHeight = 2 * focal_length * std::tan(vfov_rads / 2);
     double viewportWidth = viewportHeight * (static_cast<double>(m_imageWidth)/m_imageHeight);
 
+    Vec3d camera_coords_w = (m_origin - m_target).normalized();
+    Vec3d camera_coords_u = camera_up.cross(camera_coords_w).normalized();
+    Vec3d camera_coords_v = camera_coords_w.cross(camera_coords_u).normalized();
+
+
     // 'axis' vectors for the entire viewport
-    Vec3d viewportX = Vec3d(viewportWidth, 0, 0 );
-    Vec3d viewportY = Vec3d(0, -viewportHeight, 0 );
+    Vec3d viewportX = viewportWidth * camera_coords_u;
+    Vec3d viewportY = viewportHeight * -camera_coords_v;
 
     // X/Y vectors from one viewport pixel to the next
     m_pixel_dX = viewportX / m_imageWidth;
     m_pixel_dY = viewportY / m_imageHeight;
 
     // The top-left origin of the viewport
-    Point3d viewportOrigin = m_origin - Vec3d(0, 0, m_focalLength) - (viewportX / 2) - (viewportY / 2);
+    Point3d viewportOrigin = m_origin - (focal_length * camera_coords_w) - (viewportX / 2) - (viewportY / 2);
 
     // The center of the top-left viewport pixel
     m_pixelOrigin = viewportOrigin + 0.5 * ( m_pixel_dX + m_pixel_dY );
@@ -42,11 +56,15 @@ Image Camera::render(Scene const &scene)
 
     double sampleScale = 1.0 / (double) m_samplesPerPixel;
 
+    std::clog << "Starting render..." << std::endl;
+
     for (int j = 0; j < m_imageHeight; j++) {
+
+        std::clog << std::format("Rendering line {:d} of {:d}", j+1, m_imageHeight) << "\r";
+        std::clog.flush();
 
         for (int i = 0; i < m_imageWidth; i++)
         {
-
             Colour currentPixel{ 0, 0, 0 };
 
             for ( int k = 0; k < m_samplesPerPixel; k++ )
@@ -60,6 +78,9 @@ Image Camera::render(Scene const &scene)
             image.setPixel(i, j, currentPixel);
         }
     }
+
+    std::clog << "\n" << std::endl;
+    std::clog << "Done." << std::endl;
 
     return image;
 }

@@ -19,9 +19,11 @@ struct CameraData
 {
     int width = 800;
     int height = 600;
-    Vec3d origin = Vec3d{0, 0.0, 1.5};
+    Vec3d origin = Vec3d{0, 0, 0};
+    Vec3d target = Vec3d{0, 0, -1};
     double focalLength = 1.0;
-    int samplesPerPixel = 50;
+    double vertical_fov = 90.;
+    int samplesPerPixel = 10;
     int maxScatteringDepth = 50;
 };
 
@@ -39,7 +41,8 @@ private:
 
     // Origin and focal length of the camera
     Point3d m_origin;
-    double m_focalLength;
+    Point3d m_target;
+    double m_vertical_fov;
 
     // Antialiasing
     int m_samplesPerPixel;
