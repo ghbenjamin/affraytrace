@@ -1,5 +1,8 @@
 #include "Random.h"
 
+#include <iostream>
+#include <ostream>
+
 namespace affraytrace
 {
 
@@ -13,6 +16,7 @@ double Random::random_unit_double()
 
 double Random::random_double(double min, double max)
 {
+
     return min + (max - min) * random_unit_double();
 }
 

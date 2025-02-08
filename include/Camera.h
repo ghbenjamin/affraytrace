@@ -30,7 +30,7 @@ struct CameraData
 class Camera
 {
 public:
-    Camera( Random& random, CameraData const& data );
+    Camera( std::shared_ptr<Random> const& random, CameraData const& data );
     Image render( Scene const& scene );
 
 private:
@@ -56,18 +56,15 @@ private:
     Vec3d m_pixel_dX;
 
     // Random state
-    Random& m_random;
+    std::shared_ptr<Random> m_random;
 
 private:
 
     // Return a ray directed at a randomly sampled point in the unit square centered on the pixel (i, j)
     Ray get_sampled_ray( int i, int j );
 
-    // Temporary hard coded ray -> colour
+    // Determine the pixel colour for a single ray.
     Colour ray_colour( Ray const& ray, int depth, Scene const& scene );
-
-
-
 };
 
 }

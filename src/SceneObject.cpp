@@ -5,9 +5,11 @@
 
 namespace affraytrace
 {
+SceneObject::SceneObject(Material *material, Vec3d const &origin)
+    : m_origin(origin), m_material(material) {}
 
-SphereObject::SphereObject(Vec3d const& origin, double radius, Material* material)
-    : m_origin(origin), m_radius(radius), m_material(material) {}
+SphereObject::SphereObject(Material* material, Vec3d const& origin, double radius )
+    : SceneObject(material, origin), m_radius(radius) {}
 
 std::optional<HitData> SphereObject::hit(Ray const &ray, Interval const& tValid) const
 {

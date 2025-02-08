@@ -10,7 +10,7 @@
 namespace affraytrace
 {
 
-Camera::Camera( Random& random, CameraData const& data )
+Camera::Camera( std::shared_ptr<Random> const& random, CameraData const& data )
     :
         m_imageWidth(data.width),
         m_imageHeight(data.height),
@@ -87,7 +87,7 @@ Image Camera::render(Scene const &scene)
 
 Ray Camera::get_sampled_ray(const int i, const int j)
 {
-    Vec3d random_offset = m_random.sample_unit_square();
+    Vec3d random_offset = m_random->sample_unit_square();
 
     auto pixel_center =
         m_pixelOrigin
