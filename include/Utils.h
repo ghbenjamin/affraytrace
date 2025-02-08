@@ -26,7 +26,7 @@ namespace affraytrace
 
 
     template <typename... Args>
-    void log_string( std::string const& format, Args const && ...args )
+    void log_string( std::string const& format, Args&& ...args )
     {
         std::clog << std::vformat(format, std::make_format_args(std::forward<Args>(args)...)) << std::endl;
     }

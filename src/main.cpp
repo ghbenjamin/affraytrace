@@ -75,7 +75,7 @@ int do_scene_file( cxxopts::ParseResult const& args )
 
 int main( int argc, char** argv )
 {
-    log_string( "affraytrace v0.0.1" );
+    log_string( "affraytrace v0.0.1\n" );
 
     cxxopts::Options options("affraytrace", "a very very basic raytracer");
     options.add_options()

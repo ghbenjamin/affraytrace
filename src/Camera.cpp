@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include <iostream>
+#include <chrono>
 
 #include "Scene.h"
 #include "Interval.h"
@@ -56,7 +57,9 @@ Image Camera::render(Scene const &scene)
 
     double sampleScale = 1.0 / (double) m_samplesPerPixel;
 
-    std::clog << "Starting render..." << std::endl;
+    log_string( "Starting render..." );
+
+    auto start_time = std::chrono::high_resolution_clock::now();
 
     for (int j = 0; j < m_imageHeight; j++) {
 
@@ -79,8 +82,17 @@ Image Camera::render(Scene const &scene)
         }
     }
 
-    std::clog << "\n" << std::endl;
-    std::clog << "Done." << std::endl;
+
+    auto end_time = std::chrono::high_resolution_clock::now();
+    double elapsed_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+
+    double elapsed_nanoseconds = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+    double elapsed_micros_per_pixel = elapsed_nanoseconds / (m_imageHeight * m_imageWidth);
+
+    log_string( "\nDone.\n" );
+    log_string( "Total elapsed time: {:.2f}s", elapsed_milliseconds / 1000 );
+    log_string( "Elapsed time per pixel: {:.2f}us", elapsed_micros_per_pixel );
+
 
     return image;
 }
